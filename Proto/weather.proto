@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "WeatherForecasting";
+
+package WeatherForecasting;
+
+service WeatherForecasts {
+  rpc GetWeather (WeatherRequest) returns (WeatherReply) {}
+
+  rpc GetWeatherStream (WeatherRequest) returns (stream WeatherForecast) {}
+}
+
+message WeatherRequest {
+}
+
+message WeatherReply {
+  repeated WeatherForecast forecasts = 1;
+}
+
+message WeatherForecast {
+  int64 dateTimeStamp = 1;
+  int32 temperatureC = 2;
+  int32 temperatureF = 3;
+  string summary = 4;
+}
