@@ -47,7 +47,7 @@ namespace WeatherForecast.Grpc.Server.Services
 
             var i = 0;
 
-            while (!context.CancellationToken.IsCancellationRequested || i < 100)
+            while (!context.CancellationToken.IsCancellationRequested && i < 100)
             {
                 var forecast = new WeatherForecasting.WeatherForecast
                 {

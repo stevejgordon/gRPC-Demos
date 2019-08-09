@@ -34,11 +34,11 @@ namespace WeatherForecast.Grpc.StreamingClient
 
                     Console.WriteLine($"{date:s} | {current.Summary} | {current.TemperatureC} C");
                 }
-                
-                replies.Dispose();
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
+                replies.Dispose();
+
                 Console.WriteLine("Stream cancelled.");
             }
             
