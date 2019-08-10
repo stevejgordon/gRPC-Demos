@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using WeatherForecasting;
+using WeatherForecast.Grpc.Proto;
 
 namespace WeatherForecast.Grpc.Server.Services
 {
@@ -24,10 +25,11 @@ namespace WeatherForecast.Grpc.Server.Services
         public override async Task<WeatherReply> GetWeather(WeatherRequest request, ServerCallContext context)
         {
             var rng = new Random();
+            var now = DateTimeOffset.UtcNow;
 
-            var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherForecasting.WeatherForecast
+            var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherData
                 {
-                    DateTimeStamp = DateTimeOffset.UtcNow.AddDays(index).ToUnixTimeSeconds(),
+                    DateTimeStamp = now.AddDays(index).ToUnixTimeSeconds(),
                     TemperatureC = rng.Next(-20, 55),
                     Summary = Summaries[rng.Next(Summaries.Length)]
                 })
@@ -37,21 +39,22 @@ namespace WeatherForecast.Grpc.Server.Services
 
             return new WeatherReply
             {
-                Forecasts = { forecasts }
+                WeatherData = { forecasts }
             };
         }
 
-        public override async Task GetWeatherStream(WeatherRequest request, IServerStreamWriter<WeatherForecasting.WeatherForecast> responseStream, ServerCallContext context)
+        public override async Task GetWeatherStream(WeatherRequest request, IServerStreamWriter<WeatherData> responseStream, ServerCallContext context)
         {
             var rng = new Random();
+            var now = DateTimeOffset.UtcNow;
 
             var i = 0;
 
-            while (!context.CancellationToken.IsCancellationRequested && i < 100)
+            while (!context.CancellationToken.IsCancellationRequested && i < 20)
             {
-                var forecast = new WeatherForecasting.WeatherForecast
+                var forecast = new WeatherData
                 {
-                    DateTimeStamp = DateTimeOffset.UtcNow.AddDays(i++).ToUnixTimeSeconds(),
+                    DateTimeStamp = now.AddDays(i++).ToUnixTimeSeconds(),
                     TemperatureC = rng.Next(-20, 55),
                     Summary = Summaries[rng.Next(Summaries.Length)]
                 };
@@ -64,6 +67,52 @@ namespace WeatherForecast.Grpc.Server.Services
             if (context.CancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation("The client cancelled their request");
+            }
+        }
+
+        public override async Task ClientStreamWeather(IAsyncStreamReader<TownWeatherRequest> requestStream, IServerStreamWriter<TownWeatherForecast> responseStream,
+            ServerCallContext context)
+        {
+            var rng = new Random();
+            var now = DateTimeOffset.UtcNow;
+
+            var tasks = new List<Task>();
+
+            try
+            {
+                while (await requestStream.MoveNext(context.CancellationToken))
+                {
+                    _logger.LogInformation($"Getting weather for {requestStream.Current.TownName}");
+
+                    tasks.Add(GetTownWeather(requestStream.Current.TownName));
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An exception occurred");
+            }
+
+            _logger.LogInformation("Client finished streaming");
+
+            await Task.WhenAll(tasks); // wait for all responses to be written
+            
+            _logger.LogInformation("Completed response streaming");
+
+            async Task GetTownWeather(string town)
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    var forecast = new WeatherData
+                    {
+                        DateTimeStamp = now.AddDays(i).ToUnixTimeSeconds(),
+                        TemperatureC = rng.Next(-20, 55),
+                        Summary = Summaries[rng.Next(Summaries.Length)]
+                    };
+
+                    await responseStream.WriteAsync(new TownWeatherForecast{ TownName = town, WeatherData = forecast });
+
+                    await Task.Delay(500); // Gotta look busy
+                }
             }
         }
     }

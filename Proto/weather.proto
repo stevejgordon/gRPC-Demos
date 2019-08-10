@@ -1,25 +1,34 @@
 syntax = "proto3";
 
-option csharp_namespace = "WeatherForecasting";
+option csharp_namespace = "WeatherForecast.Grpc.Proto";
 
 package WeatherForecasting;
 
 service WeatherForecasts {
-  rpc GetWeather (WeatherRequest) returns (WeatherReply) {}
-
-  rpc GetWeatherStream (WeatherRequest) returns (stream WeatherForecast) {}
+  rpc GetWeather (WeatherRequest) returns (WeatherReply);
+  rpc GetWeatherStream (WeatherRequest) returns (stream WeatherData);
+  rpc ClientStreamWeather (stream TownWeatherRequest) returns (stream TownWeatherForecast);
 }
 
 message WeatherRequest {
 }
 
-message WeatherReply {
-  repeated WeatherForecast forecasts = 1;
+message TownWeatherRequest {
+  string townName = 1;
 }
 
-message WeatherForecast {
+message WeatherReply {
+  repeated WeatherData weatherData = 1;
+}
+
+message WeatherData {
   int64 dateTimeStamp = 1;
   int32 temperatureC = 2;
   int32 temperatureF = 3;
   string summary = 4;
+}
+
+message TownWeatherForecast {
+    string townName = 1;
+    WeatherData weatherData = 2;
 }

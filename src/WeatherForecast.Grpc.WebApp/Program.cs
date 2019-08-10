@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace WeatherForecast.Rest.Server
+namespace WeatherForecast.Grpc.WebApp
 {
     public class Program
     {

@@ -1,10 +1,13 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WeatherForecast.Grpc.Proto;
+using WeatherForecast.Grpc.WebApp.Hubs;
 
-namespace WeatherForecast.Rest.Server
+namespace WeatherForecast.Grpc.WebApp
 {
     public class Startup
     {
@@ -15,29 +18,41 @@ namespace WeatherForecast.Rest.Server
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddRazorPages();
+            services.AddSignalR();
+
+            services.AddGrpcClient<WeatherForecasts.WeatherForecastsClient>(o =>
+            {
+                o.BaseAddress = new Uri("https://localhost:5005");
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
+            app.UseCookiePolicy();
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapHub<WeatherStreamHub>("/weatherHub");
             });
         }
     }

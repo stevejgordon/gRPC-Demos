@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
-using WeatherForecasting;
+using WeatherForecast.Grpc.Proto;
 
 namespace WeatherForecast.Grpc.StreamingClient
 {

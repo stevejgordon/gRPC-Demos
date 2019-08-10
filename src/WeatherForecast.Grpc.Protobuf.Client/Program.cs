@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Grpc.Net.Client;
-using WeatherForecast.Grpc.Proto;
+using ProtoBuf.Grpc.Client;
+using WeatherForecast.Grpc.Shared;
 
-namespace WeatherForecast.Grpc.Client
+namespace WeatherForecast.Grpc.Protobuf.Client
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             var httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:5005")
+                BaseAddress = new Uri("https://localhost:5010")
             };
 
-            var client = GrpcClient.Create<WeatherForecasts.WeatherForecastsClient>(httpClient);
+            var client = httpClient.CreateGrpcService<IWeatherForecasts>();
 
-            var response = await client.GetWeatherAsync(new WeatherRequest());
+            var response = await client.GetWeatherAsync();
 
-            foreach (var forecast in response.WeatherData)
+            foreach (var forecast in response.Forecasts)
             {
                 var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
 

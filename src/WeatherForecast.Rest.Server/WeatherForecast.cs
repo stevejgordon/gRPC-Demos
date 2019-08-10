@@ -1,5 +1,3 @@
-using System;
-
 namespace WeatherForecast.Rest.Server
 {
     public class WeatherForecast
