@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WeatherForecast.Grpc.Shared\WeatherForecast.Grpc.Shared.csproj" />
+    <ProjectReference Include="..\WeatherForecast.Grpc.Shared\WeatherForecast.Grpc.Shared.csproj" />
   </ItemGroup>
 
 </Project>

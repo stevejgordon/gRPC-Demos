@@ -26,7 +26,7 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
 
             using var townForecast = client.ClientStreamWeather();
 
-            _ = Task.Run(async () =>
+            var responseProcessing = Task.Run(async () =>
             {
                 try
                 {
@@ -56,14 +56,18 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
                 Console.ResetColor();
 
                 await townForecast.RequestStream.WriteAsync(new TownWeatherRequest{ TownName = town });
-
+                               
                 await Task.Delay(2500); // simulate delay getting next item
             }
-                
-            Console.WriteLine("Disconnecting");
-            await townForecast.RequestStream.CompleteAsync();
 
-            Console.WriteLine("Disconnected. Press any key to exit.");
+            Console.WriteLine("Completing request stream");
+            await townForecast.RequestStream.CompleteAsync();
+            Console.WriteLine("Request stream completed");
+
+            await responseProcessing;
+
+            Console.WriteLine("Read all responses");
+            Console.WriteLine("Press a key to exit");
             Console.ReadKey();
         }
     }

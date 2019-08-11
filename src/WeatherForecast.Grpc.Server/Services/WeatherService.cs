@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -28,11 +29,11 @@ namespace WeatherForecast.Grpc.Server.Services
             var now = DateTimeOffset.UtcNow;
 
             var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherData
-                {
-                    DateTimeStamp = now.AddDays(index).ToUnixTimeSeconds(),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
+            {
+                DateTimeStamp = now.AddDays(index).ToUnixTimeSeconds(),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            })
                 .ToArray();
 
             await Task.Delay(2000); // Gotta look busy
@@ -60,7 +61,7 @@ namespace WeatherForecast.Grpc.Server.Services
                 };
 
                 await responseStream.WriteAsync(forecast);
-                
+
                 await Task.Delay(500); // Gotta look busy
             }
 
@@ -76,7 +77,19 @@ namespace WeatherForecast.Grpc.Server.Services
             var rng = new Random();
             var now = DateTimeOffset.UtcNow;
 
-            var tasks = new List<Task>();
+            var channel = Channel.CreateUnbounded<TownWeatherForecast>();
+
+            _ = Task.Run(async () =>
+            {
+                await foreach (var forecast in channel.Reader.ReadAllAsync())
+                {
+                    //Console.WriteLine($"Sending : {town} {i} = {forecast.DateTimeStamp} | {forecast.TemperatureC} | {forecast.Summary} ");
+
+                    await responseStream.WriteAsync(forecast);
+                }
+            });
+
+            var getWeatherTasks = new List<Task>();
 
             try
             {
@@ -84,18 +97,22 @@ namespace WeatherForecast.Grpc.Server.Services
                 {
                     _logger.LogInformation($"Getting weather for {requestStream.Current.TownName}");
 
-                    tasks.Add(GetTownWeather(requestStream.Current.TownName));
+                    getWeatherTasks.Add(GetTownWeather(requestStream.Current.TownName));
                 }
+
+                _logger.LogInformation("Client finished streaming");
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "An exception occurred");
             }
 
-            _logger.LogInformation("Client finished streaming");
+            await Task.WhenAll(getWeatherTasks); // wait for all responses to be written to the channel
 
-            await Task.WhenAll(tasks); // wait for all responses to be written
-            
+            channel.Writer.TryComplete();
+
+            await channel.Reader.Completion; //  wait for all responses to be sent from the channel
+
             _logger.LogInformation("Completed response streaming");
 
             async Task GetTownWeather(string town)
@@ -109,9 +126,9 @@ namespace WeatherForecast.Grpc.Server.Services
                         Summary = Summaries[rng.Next(Summaries.Length)]
                     };
 
-                    await responseStream.WriteAsync(new TownWeatherForecast{ TownName = town, WeatherData = forecast });
+                    await Task.Delay(500); // Gotta look busy                    
 
-                    await Task.Delay(500); // Gotta look busy
+                    await channel.Writer.WriteAsync(new TownWeatherForecast { TownName = town, WeatherData = forecast });
                 }
             }
         }

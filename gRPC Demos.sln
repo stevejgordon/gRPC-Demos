@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Client
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GRPC-BONUS", "GRPC-BONUS", "{250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Grpc.Shared", "WeatherForecast.Grpc.Shared\WeatherForecast.Grpc.Shared.csproj", "{6321C208-9548-4F0F-8BFB-38A150559FD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Protobuf.Server", "src\WeatherForecast.Grpc.Protobuf.Server\WeatherForecast.Grpc.Protobuf.Server.csproj", "{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Grpc.Protobuf.Server", "src\WeatherForecast.Grpc.Protobuf.Server\WeatherForecast.Grpc.Protobuf.Server.csproj", "{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Protobuf.Client", "src\WeatherForecast.Grpc.Protobuf.Client\WeatherForecast.Grpc.Protobuf.Client.csproj", "{BAAE7098-3D43-481C-8785-50C3E95ECDB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Grpc.Protobuf.Client", "src\WeatherForecast.Grpc.Protobuf.Client\WeatherForecast.Grpc.Protobuf.Client.csproj", "{BAAE7098-3D43-481C-8785-50C3E95ECDB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Shared", "src\WeatherForecast.Grpc.Shared\WeatherForecast.Grpc.Shared.csproj", "{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +65,6 @@ Global
 		{185AF7A7-DD0E-45FD-AE79-518C178F5931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{185AF7A7-DD0E-45FD-AE79-518C178F5931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{185AF7A7-DD0E-45FD-AE79-518C178F5931}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6321C208-9548-4F0F-8BFB-38A150559FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6321C208-9548-4F0F-8BFB-38A150559FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6321C208-9548-4F0F-8BFB-38A150559FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6321C208-9548-4F0F-8BFB-38A150559FD6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -77,6 +73,10 @@ Global
 		{BAAE7098-3D43-481C-8785-50C3E95ECDB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAAE7098-3D43-481C-8785-50C3E95ECDB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAAE7098-3D43-481C-8785-50C3E95ECDB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,9 +92,9 @@ Global
 		{257149BF-325A-4F57-A3E7-F997F64A8953} = {8D2CD8A2-F688-4B24-9EF0-C39437249A40}
 		{185AF7A7-DD0E-45FD-AE79-518C178F5931} = {8D2CD8A2-F688-4B24-9EF0-C39437249A40}
 		{250FC6B2-A72A-4E42-9FA4-862E7B90DB9D} = {C4C74659-6858-4C4E-8A8D-C90663228087}
-		{6321C208-9548-4F0F-8BFB-38A150559FD6} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
 		{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
 		{BAAE7098-3D43-481C-8785-50C3E95ECDB8} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
+		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFE2A2F9-E189-4EED-B86C-EBD275BDBAAA}
