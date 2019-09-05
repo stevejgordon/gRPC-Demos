@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -17,12 +15,8 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
 
         private static async Task Main(string[] args)
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:5005")
-            };
-
-            var client = GrpcClient.Create<WeatherForecasts.WeatherForecastsClient>(httpClient);
+            var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var client = new WeatherForecasts.WeatherForecastsClient(channel);
 
             using var townForecast = client.ClientStreamWeather();
 
@@ -30,13 +24,11 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
             {
                 try
                 {
-                    while (await townForecast.ResponseStream.MoveNext(CancellationToken.None))
+                    await foreach (var forecast in townForecast.ResponseStream.ReadAllAsync())
                     {
-                        var response = townForecast.ResponseStream.Current;
+                        var date = DateTimeOffset.FromUnixTimeSeconds(forecast.WeatherData.DateTimeStamp);
 
-                        var date = DateTimeOffset.FromUnixTimeSeconds(response.WeatherData.DateTimeStamp);
-
-                        Console.WriteLine($"{response.TownName} = {date:s} | {response.WeatherData.Summary} | {response.WeatherData.TemperatureC} C");
+                        Console.WriteLine($"{forecast.TownName} = {date:s} | {forecast.WeatherData.Summary} | {forecast.WeatherData.TemperatureC} C");
                     }
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

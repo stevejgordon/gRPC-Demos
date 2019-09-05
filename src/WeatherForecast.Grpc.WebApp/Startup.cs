@@ -25,7 +25,7 @@ namespace WeatherForecast.Grpc.WebApp
 
             services.AddGrpcClient<WeatherForecasts.WeatherForecastsClient>(o =>
             {
-                o.BaseAddress = new Uri("https://localhost:5005");
+                o.Address = new Uri("https://localhost:5005");
             });
         }
 

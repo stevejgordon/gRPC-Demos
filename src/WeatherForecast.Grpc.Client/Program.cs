@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using WeatherForecast.Grpc.Proto;
@@ -10,12 +9,8 @@ namespace WeatherForecast.Grpc.Client
     {
         private static async Task Main(string[] args)
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:5005")
-            };
-
-            var client = GrpcClient.Create<WeatherForecasts.WeatherForecastsClient>(httpClient);
+            var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var client = new WeatherForecasts.WeatherForecastsClient(channel);
 
             var response = await client.GetWeatherAsync(new WeatherRequest());
 

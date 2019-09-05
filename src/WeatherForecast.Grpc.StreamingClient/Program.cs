@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -12,12 +11,8 @@ namespace WeatherForecast.Grpc.StreamingClient
     {
         private static async Task Main(string[] args)
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:5005")
-            };
-
-            var client = GrpcClient.Create<WeatherForecasts.WeatherForecastsClient>(httpClient);
+            var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var client = new WeatherForecasts.WeatherForecastsClient(channel);
 
             var cts = new CancellationTokenSource();
             cts.CancelAfter(TimeSpan.FromSeconds(5));
@@ -26,13 +21,16 @@ namespace WeatherForecast.Grpc.StreamingClient
 
             try
             {
+                await foreach (var weatherData in replies.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
+                {
+                    var date = DateTimeOffset.FromUnixTimeSeconds(weatherData.DateTimeStamp);
+
+                    Console.WriteLine($"{date:s} | {weatherData.Summary} | {weatherData.TemperatureC} C");
+                }
+
                 while (await replies.ResponseStream.MoveNext(cts.Token))
                 {
-                    var current = replies.ResponseStream.Current;
-
-                    var date = DateTimeOffset.FromUnixTimeSeconds(current.DateTimeStamp);
-
-                    Console.WriteLine($"{date:s} | {current.Summary} | {current.TemperatureC} C");
+                   
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

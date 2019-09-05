@@ -97,7 +97,7 @@ namespace WeatherForecast.Grpc.Server.Services
                 {
                     _logger.LogInformation($"Getting weather for {requestStream.Current.TownName}");
 
-                    getWeatherTasks.Add(GetTownWeather(requestStream.Current.TownName));
+                    getWeatherTasks.Add(GetTownWeatherAsync(requestStream.Current.TownName));
                 }
 
                 _logger.LogInformation("Client finished streaming");
@@ -115,7 +115,7 @@ namespace WeatherForecast.Grpc.Server.Services
 
             _logger.LogInformation("Completed response streaming");
 
-            async Task GetTownWeather(string town)
+            async Task GetTownWeatherAsync(string town)
             {
                 for (var i = 0; i < 10; i++)
                 {
