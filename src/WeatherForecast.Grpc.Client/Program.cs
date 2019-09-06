@@ -12,9 +12,9 @@ namespace WeatherForecast.Grpc.Client
             var channel = GrpcChannel.ForAddress("https://localhost:5005");
             var client = new WeatherForecasts.WeatherForecastsClient(channel);
 
-            var response = await client.GetWeatherAsync(new WeatherRequest());
+            var reply = await client.GetWeatherAsync(new WeatherRequest());
 
-            foreach (var forecast in response.WeatherData)
+            foreach (var forecast in reply.WeatherData)
             {
                 var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
 

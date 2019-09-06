@@ -30,7 +30,7 @@ namespace WeatherForecast.Grpc.StreamingClient
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
-                replies.Dispose();
+                replies.Dispose(); // without this the server keeps sending stuff even though the client doesn't care!
 
                 Console.WriteLine("Stream cancelled.");
             }
