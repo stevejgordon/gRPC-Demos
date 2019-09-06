@@ -77,27 +77,28 @@ namespace WeatherForecast.Grpc.Server.Services
             var rng = new Random();
             var now = DateTimeOffset.UtcNow;
 
+            // we'll use a channel here to handle in-process 'messages' concurrently being written to and read from the channel.
             var channel = Channel.CreateUnbounded<TownWeatherForecast>();
 
+            // background task which uses async streams to write each forecast from the channel to the response steam.
             _ = Task.Run(async () =>
             {
                 await foreach (var forecast in channel.Reader.ReadAllAsync())
                 {
-                    //Console.WriteLine($"Sending : {town} {i} = {forecast.DateTimeStamp} | {forecast.TemperatureC} | {forecast.Summary} ");
-
                     await responseStream.WriteAsync(forecast);
                 }
             });
 
+            // a list of tasks handling requests concurrently
             var getWeatherTasks = new List<Task>();
 
             try
             {
-                while (await requestStream.MoveNext(context.CancellationToken))
+                // async streams used to process each request from the stream as they are receieved
+                await foreach(var request in requestStream.ReadAllAsync())
                 {
-                    _logger.LogInformation($"Getting weather for {requestStream.Current.TownName}");
-
-                    getWeatherTasks.Add(GetTownWeatherAsync(requestStream.Current.TownName));
+                    _logger.LogInformation($"Getting weather for {request.TownName}");
+                    getWeatherTasks.Add(GetTownWeatherAsync(request.TownName)); // start and add the request handling task
                 }
 
                 _logger.LogInformation("Client finished streaming");
@@ -107,14 +108,20 @@ namespace WeatherForecast.Grpc.Server.Services
                 _logger.LogError(e, "An exception occurred");
             }
 
-            await Task.WhenAll(getWeatherTasks); // wait for all responses to be written to the channel
+            // wait for all responses to be written to the channel 
+            // from the concurrent tasks handling each request
+            await Task.WhenAll(getWeatherTasks); 
 
             channel.Writer.TryComplete();
 
-            await channel.Reader.Completion; //  wait for all responses to be sent from the channel
+            //  wait for all responses to be read from the channel and streamed as responses
+            await channel.Reader.Completion; 
 
             _logger.LogInformation("Completed response streaming");
 
+            // a local function which defines a task to handle a town forecast request
+            // it produces 10 forecasts for each town, simulating a 0.5s time to gather each forecast
+            // multiple instances of this will run concurrently for each recieved request
             async Task GetTownWeatherAsync(string town)
             {
                 for (var i = 0; i < 10; i++)
@@ -128,6 +135,7 @@ namespace WeatherForecast.Grpc.Server.Services
 
                     await Task.Delay(500); // Gotta look busy                    
 
+                    // write the forecast to the channel which will be picked up concurrently by the channel reading background task
                     await channel.Writer.WriteAsync(new TownWeatherForecast { TownName = town, WeatherData = forecast });
                 }
             }

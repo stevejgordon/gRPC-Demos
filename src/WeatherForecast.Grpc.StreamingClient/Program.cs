@@ -27,11 +27,6 @@ namespace WeatherForecast.Grpc.StreamingClient
 
                     Console.WriteLine($"{date:s} | {weatherData.Summary} | {weatherData.TemperatureC} C");
                 }
-
-                while (await replies.ResponseStream.MoveNext(cts.Token))
-                {
-                   
-                }
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {

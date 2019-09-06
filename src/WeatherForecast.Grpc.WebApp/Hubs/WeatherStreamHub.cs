@@ -31,19 +31,15 @@ namespace WeatherForecast.Grpc.WebApp.Hubs
 
                 try
                 {
-                    while (await replies.ResponseStream.MoveNext(cancellationToken))
-                    {
-                        var current = replies.ResponseStream.Current;
-
-                        var date = DateTimeOffset.FromUnixTimeSeconds(current.DateTimeStamp);
-
-                        await writer.WriteAsync($"{date:s} | {current.Summary} | {current.TemperatureC} C", cancellationToken);
+                    await foreach(var forecast in replies.ResponseStream.ReadAllAsync())
+                    {                  
+                        var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
+                        await writer.WriteAsync($"{date:s} | {forecast.Summary} | {forecast.TemperatureC} C", cancellationToken);
                     }
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
                 {
                     replies.Dispose();
-
                     Console.WriteLine("Stream cancelled.");
                 }
                 catch (Exception ex)
