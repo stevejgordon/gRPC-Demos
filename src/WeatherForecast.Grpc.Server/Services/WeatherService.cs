@@ -44,7 +44,10 @@ namespace WeatherForecast.Grpc.Server.Services
             };
         }
 
-        public override async Task GetWeatherStream(WeatherRequest request, IServerStreamWriter<WeatherData> responseStream, ServerCallContext context)
+        public override async Task GetWeatherStream(
+            WeatherRequest request, 
+            IServerStreamWriter<WeatherData> responseStream, 
+            ServerCallContext context)
         {
             var rng = new Random();
             var now = DateTimeOffset.UtcNow;
@@ -60,6 +63,8 @@ namespace WeatherForecast.Grpc.Server.Services
                     Summary = Summaries[rng.Next(Summaries.Length)]
                 };
 
+                _logger.LogInformation("Sending WeatherData response");
+
                 await responseStream.WriteAsync(forecast);
 
                 await Task.Delay(500); // Gotta look busy
@@ -71,7 +76,9 @@ namespace WeatherForecast.Grpc.Server.Services
             }
         }
 
-        public override async Task ClientStreamWeather(IAsyncStreamReader<TownWeatherRequest> requestStream, IServerStreamWriter<TownWeatherForecast> responseStream,
+        public override async Task ClientStreamWeather(
+            IAsyncStreamReader<TownWeatherRequest> requestStream, 
+            IServerStreamWriter<TownWeatherForecast> responseStream,
             ServerCallContext context)
         {
             var rng = new Random();
@@ -90,7 +97,7 @@ namespace WeatherForecast.Grpc.Server.Services
             });
 
             // a list of tasks handling requests concurrently
-            var getWeatherTasks = new List<Task>();
+            var getTownWeatherRequestTasks = new List<Task>();
 
             try
             {
@@ -98,7 +105,7 @@ namespace WeatherForecast.Grpc.Server.Services
                 await foreach(var request in requestStream.ReadAllAsync())
                 {
                     _logger.LogInformation($"Getting weather for {request.TownName}");
-                    getWeatherTasks.Add(GetTownWeatherAsync(request.TownName)); // start and add the request handling task
+                    getTownWeatherRequestTasks.Add(GetTownWeatherAsync(request.TownName)); // start and add the request handling task
                 }
 
                 _logger.LogInformation("Client finished streaming");
@@ -110,7 +117,7 @@ namespace WeatherForecast.Grpc.Server.Services
 
             // wait for all responses to be written to the channel 
             // from the concurrent tasks handling each request
-            await Task.WhenAll(getWeatherTasks); 
+            await Task.WhenAll(getTownWeatherRequestTasks); 
 
             channel.Writer.TryComplete();
 
@@ -136,7 +143,11 @@ namespace WeatherForecast.Grpc.Server.Services
                     await Task.Delay(500); // Gotta look busy                    
 
                     // write the forecast to the channel which will be picked up concurrently by the channel reading background task
-                    await channel.Writer.WriteAsync(new TownWeatherForecast { TownName = town, WeatherData = forecast });
+                    await channel.Writer.WriteAsync(new TownWeatherForecast 
+                    { 
+                        TownName = town, 
+                        WeatherData = forecast 
+                    });
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
     {
         private static readonly string[] Towns =
         {
-            "London", "Brighton", "Eastbourne", "Seaford", "Hastings", "Oxford", "Cambridge"
+            "London", "Brighton", "Eastbourne", "Oxford", "Cambridge"
         };
 
         private static async Task Main(string[] args)
