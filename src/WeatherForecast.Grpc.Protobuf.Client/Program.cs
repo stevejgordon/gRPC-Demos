@@ -12,7 +12,7 @@ namespace WeatherForecast.Grpc.Protobuf.Client
         {
             var httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:5010")
+                BaseAddress = new Uri("https://localhost:5012")
             };
 
             var client = httpClient.CreateGrpcService<IWeatherForecasts>();
@@ -21,9 +21,7 @@ namespace WeatherForecast.Grpc.Protobuf.Client
 
             foreach (var forecast in response.Forecasts)
             {
-                var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
-
-                Console.WriteLine($"{date:s} | {forecast.Summary} | {forecast.TemperatureC} C");
+                Console.WriteLine($"{forecast.DateTime:s} | {forecast.Summary} | {forecast.TemperatureC} C");
             }
 
             Console.WriteLine("Press a key to exit");

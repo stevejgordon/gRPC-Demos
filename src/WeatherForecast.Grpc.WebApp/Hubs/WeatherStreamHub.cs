@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.SignalR;
 using WeatherForecast.Grpc.Proto;
@@ -27,14 +28,13 @@ namespace WeatherForecast.Grpc.WebApp.Hubs
 
             async Task WriteItemsAsync(ChannelWriter<string> writer)
             {
-                using var replies = _client.GetWeatherStream(new WeatherRequest(), cancellationToken: cancellationToken);
+                using var replies = _client.GetWeatherStream(new Empty(), cancellationToken: cancellationToken);
 
                 try
                 {
                     await foreach(var forecast in replies.ResponseStream.ReadAllAsync())
                     {                  
-                        var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
-                        await writer.WriteAsync($"{date:s} | {forecast.Summary} | {forecast.TemperatureC} C", cancellationToken);
+                        await writer.WriteAsync($"{forecast.DateTimeStamp.ToDateTime():d} | {forecast.Summary} | {forecast.TemperatureC} C", cancellationToken);
                     }
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

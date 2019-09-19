@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace WeatherForecast.Grpc.Shared
 {
@@ -6,7 +7,7 @@ namespace WeatherForecast.Grpc.Shared
     public class WeatherData
     {
         [DataMember(Order = 1)]
-        public long DateTimeStamp { get; set; }
+        public DateTime DateTime { get; set; }
 
         [DataMember(Order = 2)]
         public int TemperatureC { get; set; }

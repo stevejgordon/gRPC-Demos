@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using WeatherForecast.Grpc.Proto;
@@ -23,18 +24,18 @@ namespace WeatherForecast.Grpc.Server.Services
             _logger = logger;
         }
 
-        public override async Task<WeatherReply> GetWeather(WeatherRequest request, ServerCallContext context)
+        public override async Task<WeatherReply> GetWeather(Empty _, ServerCallContext context)
         {
             var rng = new Random();
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherData
             {
-                DateTimeStamp = now.AddDays(index).ToUnixTimeSeconds(),
+                DateTimeStamp = Timestamp.FromDateTime(now.AddDays(index)),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
-                .ToArray();
+            .ToArray();
 
             await Task.Delay(2000); // Gotta look busy
 
@@ -45,12 +46,12 @@ namespace WeatherForecast.Grpc.Server.Services
         }
 
         public override async Task GetWeatherStream(
-            WeatherRequest request, 
+            Empty _, 
             IServerStreamWriter<WeatherData> responseStream, 
             ServerCallContext context)
         {
             var rng = new Random();
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             var i = 0;
 
@@ -58,7 +59,7 @@ namespace WeatherForecast.Grpc.Server.Services
             {
                 var forecast = new WeatherData
                 {
-                    DateTimeStamp = now.AddDays(i++).ToUnixTimeSeconds(),
+                    DateTimeStamp = Timestamp.FromDateTime(now.AddDays(i++)),
                     TemperatureC = rng.Next(-20, 55),
                     Summary = Summaries[rng.Next(Summaries.Length)]
                 };
@@ -76,13 +77,13 @@ namespace WeatherForecast.Grpc.Server.Services
             }
         }
 
-        public override async Task ClientStreamWeather(
+        public override async Task GetTownWeatherStream(
             IAsyncStreamReader<TownWeatherRequest> requestStream, 
             IServerStreamWriter<TownWeatherForecast> responseStream,
             ServerCallContext context)
         {
             var rng = new Random();
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             // we'll use a channel here to handle in-process 'messages' concurrently being written to and read from the channel.
             var channel = Channel.CreateUnbounded<TownWeatherForecast>();
@@ -135,7 +136,7 @@ namespace WeatherForecast.Grpc.Server.Services
                 {
                     var forecast = new WeatherData
                     {
-                        DateTimeStamp = now.AddDays(i).ToUnixTimeSeconds(),
+                        DateTimeStamp = Timestamp.FromDateTime(now.AddDays(i)),
                         TemperatureC = rng.Next(-20, 55),
                         Summary = Summaries[rng.Next(Summaries.Length)]
                     };

@@ -20,7 +20,7 @@ namespace WeatherForecast.Rest.Server.Controllers
             var rng = new Random();
             var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherForecast
             {
-                DateTimeStamp = DateTimeOffset.UtcNow.AddDays(index).ToUnixTimeSeconds(),
+                DateTime = DateTime.UtcNow.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })

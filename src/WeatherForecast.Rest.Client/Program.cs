@@ -9,23 +9,22 @@ namespace WeatherForecast.Rest.Client
     {
         private static async Task Main()
         {
-            var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:5001") }; // demoware!
+            using var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:5001") };
 
-            var response = await httpClient.GetAsync("weatherforecast");
+            using var response = await httpClient.GetAsync("weatherforecast");
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync(); // demoware!
-                var forecasts = JsonSerializer.Deserialize<WeatherForecasts>(json, new JsonSerializerOptions
+                var json = await response.Content.ReadAsStreamAsync();
+                
+                var forecasts = await JsonSerializer.DeserializeAsync<WeatherForecasts>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
                 foreach (var forecast in forecasts.Forecasts)
                 {
-                    var date = DateTimeOffset.FromUnixTimeSeconds(forecast.DateTimeStamp);
-
-                    Console.WriteLine($"{date:s} | {forecast.Summary} | {forecast.TemperatureC} C");
+                    Console.WriteLine($"{forecast.DateTime:s} | {forecast.Summary} | {forecast.TemperatureC} C");
                 }
             }
 

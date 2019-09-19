@@ -8,17 +8,12 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
 {
     internal class Program
     {
-        private static readonly string[] Towns =
-        {
-            "London", "Brighton", "Eastbourne", "Oxford", "Cambridge"
-        };
-
         private static async Task Main(string[] args)
         {
             var channel = GrpcChannel.ForAddress("https://localhost:5005");
             var client = new WeatherForecasts.WeatherForecastsClient(channel);
 
-            using var townForecast = client.ClientStreamWeather();
+            using var townForecast = client.GetTownWeatherStream();
 
             var responseProcessing = Task.Run(async () =>
             {
@@ -26,7 +21,7 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
                 {
                     await foreach (var forecast in townForecast.ResponseStream.ReadAllAsync())
                     {
-                        var date = DateTimeOffset.FromUnixTimeSeconds(forecast.WeatherData.DateTimeStamp);
+                        var date = forecast.WeatherData.DateTimeStamp.ToDateTime();
 
                         Console.WriteLine($"{forecast.TownName} = {date:s} | {forecast.WeatherData.Summary} | {forecast.WeatherData.TemperatureC} C");
                     }
@@ -41,7 +36,7 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
                 }
             });
 
-            foreach (var town in Towns)
+            foreach (var town in new [] { "London", "Brighton", "Eastbourne", "Oxford", "Cambridge" })
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine($"Requesting forecast for {town}...");

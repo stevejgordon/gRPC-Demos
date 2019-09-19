@@ -15,11 +15,11 @@ namespace WeatherForecast.Grpc.Protobuf.Server.Services
         public async ValueTask<WeatherResult> GetWeatherAsync()
         {
             var rng = new Random();
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherData
             {
-                DateTimeStamp = now.AddDays(index).ToUnixTimeSeconds(),
+                DateTime = now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
