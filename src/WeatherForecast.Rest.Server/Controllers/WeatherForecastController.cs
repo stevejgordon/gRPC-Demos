@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WeatherForecast.Rest.Server.Controllers
@@ -14,7 +15,7 @@ namespace WeatherForecast.Rest.Server.Controllers
         };
 
         [HttpGet]
-        public WeatherForecasts Get()
+        public async Task<WeatherForecasts> Get()
         {
             var rng = new Random();
             var forecasts = Enumerable.Range(1, 100).Select(index => new WeatherForecast
@@ -24,6 +25,8 @@ namespace WeatherForecast.Rest.Server.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+
+            await Task.Delay(2000); // Gotta look busy
 
             return new WeatherForecasts{ Forecasts = forecasts };
         }
