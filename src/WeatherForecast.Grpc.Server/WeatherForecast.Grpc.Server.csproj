@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="0.2.23-pre1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.24.0-dev201909180701" />
     </ItemGroup>
 
     <ItemGroup>
