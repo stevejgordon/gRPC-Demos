@@ -39,7 +39,6 @@ namespace WeatherForecast.Grpc.WebApp.Hubs
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
                 {
-                    replies.Dispose();
                     Console.WriteLine("Stream cancelled.");
                 }
                 catch (Exception ex)
