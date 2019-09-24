@@ -2,17 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
-        <UserSecretsId>f1413e46-e121-455f-8a91-d2850d5e82ba</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Grpc.Net.ClientFactory" Version="2.23.2" />
-        <PackageReference Include="Google.Protobuf" Version="3.9.1" />
-        <PackageReference Include="Grpc.Tools" Version="2.23.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\..\Proto\weather.proto" GrpcServices="Client" Link="Protos\weather.proto" />
+      <ProjectReference Include="..\WeatherForecast.Grpc.ClientLib\WeatherForecast.Grpc.ClientLib.csproj" />
     </ItemGroup>
 
 </Project>

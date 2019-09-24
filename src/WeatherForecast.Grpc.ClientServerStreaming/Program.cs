@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
-using WeatherForecast.Grpc.Proto;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.ClientServerStreaming
 {
@@ -10,8 +10,8 @@ namespace WeatherForecast.Grpc.ClientServerStreaming
     {
         private static async Task Main(string[] args)
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:5005");
-            var client = new WeatherForecasts.WeatherForecastsClient(channel);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var client = new WeatherForecastsClient(channel);
 
             using var townForecast = client.GetTownWeatherStream();
 

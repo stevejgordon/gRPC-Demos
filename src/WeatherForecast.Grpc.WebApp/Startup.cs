@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WeatherForecast.Grpc.Proto;
 using WeatherForecast.Grpc.WebApp.Hubs;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.WebApp
 {
@@ -23,7 +23,7 @@ namespace WeatherForecast.Grpc.WebApp
             services.AddRazorPages();
             services.AddSignalR();
 
-            services.AddGrpcClient<WeatherForecasts.WeatherForecastsClient>(o =>
+            services.AddGrpcClient<WeatherForecastsClient>(o =>
             {
                 o.Address = new Uri("https://localhost:5005");
             });

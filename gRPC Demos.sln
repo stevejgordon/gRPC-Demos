@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Protob
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Grpc.Shared", "src\WeatherForecast.Grpc.Shared\WeatherForecast.Grpc.Shared.csproj", "{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast.Grpc.ClientLib", "src\WeatherForecast.Grpc.ClientLib\WeatherForecast.Grpc.ClientLib.csproj", "{EF9A6855-D708-4919-AC16-B2F65CB76112}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF9A6855-D708-4919-AC16-B2F65CB76112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF9A6855-D708-4919-AC16-B2F65CB76112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF9A6855-D708-4919-AC16-B2F65CB76112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF9A6855-D708-4919-AC16-B2F65CB76112}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{420AD0E1-4CD6-4E18-AA40-793F5ECA9E5A} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
 		{BAAE7098-3D43-481C-8785-50C3E95ECDB8} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
 		{28AA8AEA-9530-4811-B9A4-87C7FCCA10A5} = {250FC6B2-A72A-4E42-9FA4-862E7B90DB9D}
+		{EF9A6855-D708-4919-AC16-B2F65CB76112} = {8D2CD8A2-F688-4B24-9EF0-C39437249A40}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFE2A2F9-E189-4EED-B86C-EBD275BDBAAA}

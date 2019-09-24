@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using WeatherForecast.Grpc.Proto;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.Server.Services
 {
-    public class WeatherService : WeatherForecasts.WeatherForecastsBase
+    public class WeatherService : WeatherForecastsBase
     {
         private readonly ILogger<WeatherService> _logger;
 

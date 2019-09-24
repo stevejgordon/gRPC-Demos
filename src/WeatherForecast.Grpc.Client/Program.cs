@@ -2,16 +2,17 @@
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
-using WeatherForecast.Grpc.Proto;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.Client
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:5005");
-            var client = new WeatherForecasts.WeatherForecastsClient(channel);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5005");
+
+            var client = new WeatherForecastsClient(channel);
 
             var reply = await client.GetWeatherAsync(new Empty());
 

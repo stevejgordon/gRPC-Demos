@@ -4,19 +4,18 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
-using WeatherForecast.Grpc.Proto;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.StreamingClient
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:5005");
-            var client = new WeatherForecasts.WeatherForecastsClient(channel);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var client = new WeatherForecastsClient(channel);
 
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromSeconds(5));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
             using var replies = client.GetWeatherStream(new Empty(), cancellationToken: cts.Token);
 

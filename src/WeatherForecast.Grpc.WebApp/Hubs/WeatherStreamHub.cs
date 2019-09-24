@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.SignalR;
-using WeatherForecast.Grpc.Proto;
+using static WeatherForecast.WeatherForecasts;
 
 namespace WeatherForecast.Grpc.WebApp.Hubs
 {
     public class WeatherStreamHub : Hub
     {
-        private readonly WeatherForecasts.WeatherForecastsClient _client;
+        private readonly WeatherForecastsClient _client;
 
-        public WeatherStreamHub(WeatherForecasts.WeatherForecastsClient client)
+        public WeatherStreamHub(WeatherForecastsClient client)
         {
             _client = client;
         }
