@@ -46,8 +46,8 @@ namespace WeatherForecast.Grpc.Server.Services
         }
 
         public override async Task GetWeatherStream(
-            Empty _, 
-            IServerStreamWriter<WeatherData> responseStream, 
+            Empty _,
+            IServerStreamWriter<WeatherData> responseStream,
             ServerCallContext context)
         {
             var rng = new Random();
@@ -78,7 +78,7 @@ namespace WeatherForecast.Grpc.Server.Services
         }
 
         public override async Task GetTownWeatherStream(
-            IAsyncStreamReader<TownWeatherRequest> requestStream, 
+            IAsyncStreamReader<TownWeatherRequest> requestStream,
             IServerStreamWriter<TownWeatherForecast> responseStream,
             ServerCallContext context)
         {
@@ -103,7 +103,7 @@ namespace WeatherForecast.Grpc.Server.Services
             try
             {
                 // async streams used to process each request from the stream as they are receieved
-                await foreach(var request in requestStream.ReadAllAsync())
+                await foreach (var request in requestStream.ReadAllAsync())
                 {
                     _logger.LogInformation($"Getting weather for {request.TownName}");
                     getTownWeatherRequestTasks.Add(GetTownWeatherAsync(request.TownName)); // start and add the request handling task
@@ -118,12 +118,12 @@ namespace WeatherForecast.Grpc.Server.Services
 
             // wait for all responses to be written to the channel 
             // from the concurrent tasks handling each request
-            await Task.WhenAll(getTownWeatherRequestTasks); 
+            await Task.WhenAll(getTownWeatherRequestTasks);
 
             channel.Writer.TryComplete();
 
             //  wait for all responses to be read from the channel and streamed as responses
-            await channel.Reader.Completion; 
+            await channel.Reader.Completion;
 
             _logger.LogInformation("Completed response streaming");
 
@@ -144,10 +144,10 @@ namespace WeatherForecast.Grpc.Server.Services
                     await Task.Delay(500); // Gotta look busy                    
 
                     // write the forecast to the channel which will be picked up concurrently by the channel reading background task
-                    await channel.Writer.WriteAsync(new TownWeatherForecast 
-                    { 
-                        TownName = town, 
-                        WeatherData = forecast 
+                    await channel.Writer.WriteAsync(new TownWeatherForecast
+                    {
+                        TownName = town,
+                        WeatherData = forecast
                     });
                 }
             }
